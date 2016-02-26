@@ -53,6 +53,14 @@ public class SortLogLines {
    * selecting an appropriate balance for  {@link #TEMP_FILE_LINE_COUNT} is
    * crucial. 
    * 
+   * Also note: this approach is single threaded, but designed to work with
+   * large data sets. Since a large number of log entries will be read into
+   * the heap and then (relatively) immediately dereferenced, an excessive 
+   * amount of time will be spent performing garbage collection. It may be 
+   * beneficial to execute using parallel GC and parallel compaction. See
+   * the guidlines at:  
+   * http://www.oracle.com/technetwork/java/javase/gc-tuning-6-140523.html#available_collectors.selecting
+   * 
    * @param inputFileName the filename of the input file
    * @param outputFileName the filename of the output file to write results to 
    * @throws IOException on file not found and other disk IO problems 
