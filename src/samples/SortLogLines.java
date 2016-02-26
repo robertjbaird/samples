@@ -37,6 +37,22 @@ public class SortLogLines {
    * <li>{@link SortedLogReader} - a reader for reading the sorted log files in order</li>
    * </ul>
    * 
+   * Enough memory must be allocated to the heap to ensure an array of 
+   * {@link #TEMP_FILE_LINE_COUNT} size for storing {@link LogEntry} can be 
+   * allocated. Approximately each entry requires a date object (32 bytes), 
+   * an enum reference (32 bits), the string (variable, approx 176 bytes based
+   * off of sample input), plus the object overhead (~16 byes). This is on
+   * average 256 bytes. If {@link #TEMP_FILE_LINE_COUNT} is 1 million, that
+   * is approximately 256mb of heap for the objects alone. 
+   * 
+   * Note that there is a tradeoff to having smaller incremental files in the
+   * external sort algorithm. If the files are smaller, you will end up with
+   * more files. During the load phase of the external sort you will have to 
+   * keep an open reference to all files simultaneously. The associated cost
+   * of the buffered input streams and file readers can become excessive, so
+   * selecting an appropriate balance for  {@link #TEMP_FILE_LINE_COUNT} is
+   * crucial. 
+   * 
    * @param inputFileName the filename of the input file
    * @param outputFileName the filename of the output file to write results to 
    * @throws IOException on file not found and other disk IO problems 
